@@ -45,7 +45,7 @@ export class CreateUserDto {
   })
   @IsOptional()
   @IsString()
-  public cpf: string;
+  public cpf?: string;
 
   @ApiProperty({
     description: 'The user cnpj',
@@ -54,7 +54,7 @@ export class CreateUserDto {
   })
   @IsOptional()
   @IsString()
-  public cnpj: string;
+  public cnpj?: string;
 
   @ApiProperty({
     description: 'The user password',

@@ -16,8 +16,8 @@ model User {
   firstName String   @map("first_name")
   lastName  String   @map("last_name")
   birthday  DateTime
-  cpf       String?
-  cnpj      String?
+  cpf       String?  @unique
+  cnpj      String?  @unique
   password  String
   status    String   @default("ACTIVE")
 
@@ -27,6 +27,7 @@ model User {
 
   campaigns DonationCampaign[]
   donations Donation[]
+  comments  Comment[]
 }
 
 model DonationCampaign {
@@ -34,7 +35,8 @@ model DonationCampaign {
   title       String
   description String
   goal        Float
-  status      String
+  moneyRaised Float  @map("money_raised") @default(0)
+  status      String @default("ACTIVE")
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
@@ -43,6 +45,7 @@ model DonationCampaign {
   campaignOrganizer   User       @relation(fields: [campaignOrganizerId], references: [id])
   campaignOrganizerId String     @unique() @map("campaign_organizer_id") @db.Uuid
   donations           Donation[]
+  comments            Comment[]
 }
 
 model Donation {
@@ -56,4 +59,18 @@ model Donation {
   campaignId String           @unique @map("campaign_id") @db.Uuid
   donor      User             @relation(fields: [donorId], references: [id])
   donorId    String           @unique @map("donor_id") @db.Uuid
+}
+
+model Comment {
+  id          String @id @default(uuid()) @db.Uuid
+  description String
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  campaign   DonationCampaign @relation(fields: [campaignId], references: [id])
+  campaignId String           @unique @map("campaign_id") @db.Uuid
+  user       User             @relation(fields: [userId], references: [id])
+  userId     String           @unique @map("user_id") @db.Uuid
 }
