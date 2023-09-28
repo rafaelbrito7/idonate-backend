@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CreateDonationCampaignDto } from './dto/create-donation-campaign.dto';
 import { DonationCampaignRepository } from './repositories/donation-campaign.repository';
-import { AppError } from 'src/common/errors/types/AppError';
+
+import { CreateDonationCampaignDto } from './dto/create-donation-campaign.dto';
 import { UpdateDonationCampaignDto } from './dto/update-donation-campaign.dto';
-import { IResponse } from 'src/common/interfaces/shared/IResponse';
+
+import { AppError } from 'src/common/errors';
+import { IResponse } from 'src/common/interfaces';
 
 @Injectable()
 export class DonationCampaignService {
@@ -38,6 +40,23 @@ export class DonationCampaignService {
     }
   }
 
+  async findAll() {
+    try {
+      const donationCampaigns = this.donationCampaignRepository.findAll();
+
+      return {
+        message: 'Campanhas de doação encontradas com sucesso!',
+        statusCode: 200,
+        payload: donationCampaigns,
+      };
+    } catch (error) {
+      throw new AppError(
+        error?.message || 'Error catch DonationCampaign: findAll',
+        error.statusCode,
+      );
+    }
+  }
+
   async findById(id: string) {
     try {
       const donationCampaign = await this.donationCampaignRepository.findById(
@@ -55,23 +74,6 @@ export class DonationCampaignService {
     } catch (error) {
       throw new AppError(
         error?.message || 'Error catch DonationCampaign: findById',
-        error.statusCode,
-      );
-    }
-  }
-
-  async findAll() {
-    try {
-      const donationCampaigns = this.donationCampaignRepository.findAll();
-
-      return {
-        message: 'Campanhas de doação encontradas com sucesso!',
-        statusCode: 200,
-        payload: donationCampaigns,
-      };
-    } catch (error) {
-      throw new AppError(
-        error?.message || 'Error catch DonationCampaign: findAll',
         error.statusCode,
       );
     }
@@ -102,6 +104,32 @@ export class DonationCampaignService {
     } catch (error) {
       throw new AppError(
         error?.message || 'Error catch DonationCampaign: update',
+        error.statusCode,
+      );
+    }
+  }
+
+  async endDonationCampaign(id: string) {
+    try {
+      const donationCampaign = await this.donationCampaignRepository.findById(
+        id,
+      );
+
+      if (!donationCampaign)
+        throw new AppError('Campanha de doação não encontrada!', 404);
+
+      await this.donationCampaignRepository.endDonationCampaign(
+        donationCampaign.id,
+      );
+
+      return {
+        message: 'Campanha de doação finalizada com sucesso!',
+        statusCode: 200,
+        payload: null,
+      };
+    } catch (error) {
+      throw new AppError(
+        error?.message || 'Error catch DonationCampaign: endDonationCampaign',
         error.statusCode,
       );
     }

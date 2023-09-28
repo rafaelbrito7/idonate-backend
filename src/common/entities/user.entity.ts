@@ -7,10 +7,9 @@ export class UsersEntity implements User {
   lastName: string;
   birthday: Date;
   cpf: string | null;
-  cnpj: string | null;
   password: string;
   status: string;
-
+  hashedRt: string;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

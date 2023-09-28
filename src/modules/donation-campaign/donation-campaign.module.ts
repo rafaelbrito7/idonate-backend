@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { DonationCampaignService } from './donation-campaign.service';
 import { DonationCampaignController } from './donation-campaign.controller';
-import { DonationCampaignRepository } from './repositories/donation-campaign.repository';
-import { PrismaService } from 'src/config/prisma';
+import { DonationCampaignRepository } from './repositories';
+import { PrismaService } from 'src/config';
 
 @Module({
   controllers: [DonationCampaignController],

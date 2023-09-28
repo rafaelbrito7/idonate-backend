@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+
 import { UserRepository } from './repositories/user.repository';
 import { IResponse } from 'src/common/interfaces/shared/IResponse';
 import { AppError } from 'src/common/errors/types/AppError';
@@ -11,68 +11,12 @@ import { ChangeUsersPasswordDto } from './dto/change-users-password.dto';
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  private async ensureUserExists(id?: string, email?: string) {
-    if (!id && !email) throw new AppError('Informe o id ou email do usuário!');
-
-    if (id) {
-      const user = await this.userRepository.findById(id);
-      if (!user) throw new AppError('Usuário não encontrado!', 404);
-      return user;
-    }
-
-    if (email) {
-      const user = await this.userRepository.findByEmail(email);
-      if (!user) throw new AppError('Usuário não encontrado!', 404);
-      return user;
-    }
-  }
-
-  async create({
-    email,
-    firstName,
-    lastName,
-    birthday,
-    cpf,
-    cnpj,
-    password,
-  }: CreateUserDto): Promise<IResponse> {
-    try {
-      const userExists = await this.userRepository.findByEmail(email);
-      if (userExists) throw new AppError('Usuário já cadastrado.', 400);
-
-      const hashedPassword = await hash(password, 10);
-
-      const user = await this.userRepository.create({
-        email,
-        firstName,
-        lastName,
-        birthday,
-        cpf,
-        cnpj,
-        password: hashedPassword,
-      });
-
-      delete user.password;
-
-      return {
-        message: 'Usuário criado com sucesso!',
-        statusCode: 201,
-        payload: user,
-      };
-    } catch (error) {
-      throw new AppError(
-        error?.message || 'Error catch Users: create',
-        error.statusCode,
-      );
-    }
-  }
-
   async changePassword(
     id: string,
     { oldPassword, newPassword }: ChangeUsersPasswordDto,
   ): Promise<IResponse> {
     try {
-      const user = await this.ensureUserExists(id, undefined);
+      const user = await this.checkIfUserExists(id);
 
       const passwordMatch = await compare(oldPassword, user.password);
       if (!passwordMatch) throw new AppError('Senha antiga não confere!', 400);
@@ -153,7 +97,7 @@ export class UserService {
 
   async update(id: string, updateUserDto: UpdateUserDto) {
     try {
-      await this.ensureUserExists(id, undefined);
+      await this.checkIfUserExists(id);
 
       const updatedUser = await this.userRepository.update(id, updateUserDto);
 
@@ -172,7 +116,7 @@ export class UserService {
 
   async softDelete(id: string) {
     try {
-      await this.ensureUserExists(id, undefined);
+      await this.checkIfUserExists(id);
 
       const softDeletedUser = await this.userRepository.softDelete(id);
 
@@ -191,7 +135,7 @@ export class UserService {
 
   async restore(id: string) {
     try {
-      await this.ensureUserExists(id, undefined);
+      await this.checkIfUserExists(id);
 
       const restoredUser = await this.userRepository.restore(id);
 
@@ -210,7 +154,7 @@ export class UserService {
 
   async delete(id: string) {
     try {
-      await this.ensureUserExists(id, undefined);
+      await this.checkIfUserExists(id);
 
       const deletedUser = await this.userRepository.delete(id);
 
@@ -225,5 +169,17 @@ export class UserService {
         error.statusCode,
       );
     }
+  }
+
+  //Utility Functions
+
+  async checkIfUserExists(id: string) {
+    const user = await this.userRepository.findById(id);
+    if (!user) throw new AppError('Usuário não encontrado!', 404);
+    return user;
+  }
+
+  async hashData(data: string) {
+    return hash(data, 10);
   }
 }

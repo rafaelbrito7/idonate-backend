@@ -14,7 +14,6 @@ export class UserRepository {
     lastName,
     birthday,
     cpf,
-    cnpj,
     password,
   }: CreateUserDto): Promise<UsersEntity> {
     return this.prismaService.user.create({
@@ -24,7 +23,6 @@ export class UserRepository {
         lastName,
         birthday,
         cpf,
-        cnpj,
         password,
       },
     });
@@ -33,7 +31,7 @@ export class UserRepository {
   async changePassword(id: string, newPassword: string): Promise<UsersEntity> {
     return this.prismaService.user.update({
       where: {
-        id: id,
+        id,
       },
       data: {
         password: newPassword,
@@ -48,7 +46,7 @@ export class UserRepository {
   async findById(id: string): Promise<UsersEntity> {
     return this.prismaService.user.findUnique({
       where: {
-        id: id,
+        id,
       },
       include: {
         campaigns: true,
@@ -67,19 +65,11 @@ export class UserRepository {
 
   async update(
     id: string,
-    {
-      email,
-      firstName,
-      lastName,
-      birthday,
-      cpf,
-      cnpj,
-      password,
-    }: UpdateUserDto,
+    { email, firstName, lastName, birthday, cpf, password }: UpdateUserDto,
   ): Promise<UsersEntity> {
     return this.prismaService.user.update({
       where: {
-        id: id,
+        id,
       },
       data: {
         email,
@@ -87,7 +77,6 @@ export class UserRepository {
         lastName,
         birthday,
         cpf,
-        cnpj,
         password,
       },
     });
@@ -96,7 +85,7 @@ export class UserRepository {
   async softDelete(id: string): Promise<UsersEntity> {
     return this.prismaService.user.update({
       where: {
-        id: id,
+        id,
       },
       data: {
         status: 'INACTIVE',
@@ -108,11 +97,36 @@ export class UserRepository {
   async restore(id: string): Promise<UsersEntity> {
     return this.prismaService.user.update({
       where: {
-        id: id,
+        id,
       },
       data: {
         status: 'ACTIVE',
         deletedAt: null,
+      },
+    });
+  }
+
+  async updateRtHash(id: string, hash: string): Promise<UsersEntity> {
+    return this.prismaService.user.update({
+      where: {
+        id,
+      },
+      data: {
+        hashedRt: hash,
+      },
+    });
+  }
+
+  async removeRtHash(id: string) {
+    return this.prismaService.user.updateMany({
+      where: {
+        id,
+        hashedRt: {
+          not: null,
+        },
+      },
+      data: {
+        hashedRt: null,
       },
     });
   }

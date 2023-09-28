@@ -63,7 +63,6 @@ export class DonationCampaignRepository {
     });
   }
 
-  //Donation campaign owner ends the campaign before the goal is reached
   async endDonationCampaign(id: string): Promise<DonationCampaignsEntity> {
     return await this.prismaService.donationCampaign.update({
       where: {

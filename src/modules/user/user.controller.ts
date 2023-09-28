@@ -10,7 +10,6 @@ import {
   Delete,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
 
 import { IResponse } from 'src/common/interfaces/shared/IResponse';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -19,19 +18,6 @@ import { ChangeUsersPasswordDto } from './dto/change-users-password.dto';
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
-    const { message, statusCode, payload } = (await this.userService.create(
-      createUserDto,
-    )) as IResponse;
-
-    return {
-      message,
-      statusCode,
-      payload,
-    };
-  }
 
   @Post('changePassword/:id')
   async changePassword(
