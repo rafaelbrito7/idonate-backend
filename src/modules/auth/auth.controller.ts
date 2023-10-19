@@ -1,17 +1,18 @@
 import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
 
 import { AuthService } from './auth.service';
 
 import { SignInDto, SignUpDto } from './dto';
 
-import { IResponse } from 'src/common';
+import { GetCurrentUser, GetCurrentUserId, IResponse } from 'src/common';
+import { RtGuard } from 'src/common/guards';
+import { Public } from 'src/common';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('signUp')
   async signUp(@Body() signUpDto: SignUpDto): Promise<IResponse> {
     const { message, statusCode, payload } = await this.authService.signUp(
@@ -25,6 +26,7 @@ export class AuthController {
     };
   }
 
+  @Public()
   @Post('signIn')
   async signIn(@Body() { email, password }: SignInDto): Promise<IResponse> {
     const { message, statusCode, payload } = await this.authService.signIn({
@@ -39,12 +41,10 @@ export class AuthController {
     };
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Post('logout')
-  async logout(@Req() req: Request) {
-    const user = req.user;
+  async logout(@GetCurrentUserId() userId: string) {
     const { message, statusCode, payload } = await this.authService.logout(
-      user['sub'],
+      userId,
     );
 
     return {
@@ -54,6 +54,22 @@ export class AuthController {
     };
   }
 
-  // @Post('refresh')
-  // async refresh() {}
+  @Public()
+  @UseGuards(RtGuard)
+  @Post('refresh')
+  async refresh(
+    @GetCurrentUserId() userId: string,
+    @GetCurrentUser('refreshToken') refreshToken: string,
+  ) {
+    const { message, statusCode, payload } = await this.authService.refresh(
+      userId,
+      refreshToken,
+    );
+
+    return {
+      message,
+      statusCode,
+      payload,
+    };
+  }
 }

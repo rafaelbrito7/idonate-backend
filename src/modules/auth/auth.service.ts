@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Req } from '@nestjs/common';
 import { SignInDto } from './dto/signin.dto';
 import { UserRepository } from '../user/repositories';
 import { AppConfigService } from 'src/config';
@@ -107,7 +107,32 @@ export class AuthService {
     }
   }
 
-  // async refresh() {}
+  async refresh(userId: string, rt: string) {
+    try {
+      const user = await this.userRepository.findById(userId);
+      if (!user || !user.hashedRt) throw new AppError('Unauthorized!', 404);
+
+      const isRtTheSame = await compare(rt, user.hashedRt);
+      if (!isRtTheSame)
+        throw new AppError('Refresh token does not match!', 403);
+
+      const tokens = await this.getTokens(user.id, user.email);
+      await this.updateRtHash(user.id, tokens.refresh_token);
+
+      return {
+        message: 'Tokens refreshed with success.',
+        statusCode: 200,
+        payload: {
+          tokens,
+        },
+      };
+    } catch (error) {
+      throw new AppError(
+        error?.message || 'Error catch Users:refresh',
+        error.statusCode,
+      );
+    }
+  }
 
   //Utility functions
 
