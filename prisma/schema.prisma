@@ -46,7 +46,7 @@ model DonationCampaign {
   deletedAt DateTime? @map("deleted_at")
 
   campaignOrganizer   User       @relation(fields: [campaignOrganizerId], references: [id])
-  campaignOrganizerId String     @unique() @map("campaign_organizer_id") @db.Uuid
+  campaignOrganizerId String     @map("campaign_organizer_id") @db.Uuid
   donations           Donation[]
   comments            Comment[]
 
@@ -55,13 +55,13 @@ model DonationCampaign {
 
 model Donation {
   id     String @id @default(uuid()) @db.Uuid
-  amount Float
+  moneyAmount Float
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  campaign   DonationCampaign @relation(fields: [campaignId], references: [id])
-  campaignId String           @unique @map("campaign_id") @db.Uuid
+  donationCampaign   DonationCampaign @relation(fields: [donationCampaignId], references: [id])
+  donationCampaignId String           @unique @map("campaign_id") @db.Uuid
   donor      User             @relation(fields: [donorId], references: [id])
   donorId    String           @unique @map("donor_id") @db.Uuid
 

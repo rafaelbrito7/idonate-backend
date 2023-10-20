@@ -8,8 +8,6 @@ import { UserModule } from '../user';
 import { AppConfigModule, AppConfigService, PrismaService } from 'src/config';
 import { AtStrategy, RtStrategy } from './strategies';
 
-//TODO: Finish JWT Video: https://youtu.be/uAKzFhE3rxU?si=Pzf-3sl3OWcjNhMq&t=4112
-
 @Module({
   imports: [
     AppConfigModule,

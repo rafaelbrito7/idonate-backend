@@ -13,19 +13,19 @@ export class DonationCampaignService {
     private readonly donationCampaignRepository: DonationCampaignRepository,
   ) {}
 
-  async create({
-    title,
-    description,
-    goal,
-    campaignOrganizerId,
-  }: CreateDonationCampaignDto) {
+  async create(
+    { title, description, goal }: CreateDonationCampaignDto,
+    currentUserId: string,
+  ) {
     try {
-      const donationCampaign = await this.donationCampaignRepository.create({
-        title,
-        description,
-        goal,
-        campaignOrganizerId,
-      });
+      const donationCampaign = await this.donationCampaignRepository.create(
+        {
+          title,
+          description,
+          goal,
+        },
+        currentUserId,
+      );
 
       return {
         statusCode: 201,
@@ -82,13 +82,21 @@ export class DonationCampaignService {
   async update(
     id: string,
     updateDonationCampaignDto: UpdateDonationCampaignDto,
+    currentUserId: string,
   ): Promise<IResponse> {
     try {
       const donationCampaign = await this.donationCampaignRepository.findById(
         id,
       );
+
       if (!donationCampaign)
         throw new AppError('Campanha de doação não encontrada!', 404);
+
+      if (donationCampaign.campaignOrganizerId !== currentUserId)
+        throw new AppError(
+          'Campanha de doação não pode ser atualizada por outro usuário!',
+          400,
+        );
 
       const updatedDonationCampaign =
         await this.donationCampaignRepository.update(
@@ -109,7 +117,7 @@ export class DonationCampaignService {
     }
   }
 
-  async endDonationCampaign(id: string) {
+  async endDonationCampaign(id: string, currentUserId: string) {
     try {
       const donationCampaign = await this.donationCampaignRepository.findById(
         id,
@@ -117,6 +125,12 @@ export class DonationCampaignService {
 
       if (!donationCampaign)
         throw new AppError('Campanha de doação não encontrada!', 404);
+
+      if (donationCampaign.campaignOrganizerId !== currentUserId)
+        throw new AppError(
+          'Campanha de doação não pode ser finalizada por outro usuário!',
+          400,
+        );
 
       await this.donationCampaignRepository.endDonationCampaign(
         donationCampaign.id,
@@ -135,15 +149,22 @@ export class DonationCampaignService {
     }
   }
 
-  async delete(id: string) {
+  async delete(id: string, currentUserId: string) {
     const NO_DONATIONS = 0;
 
     try {
       const donationCampaign = await this.donationCampaignRepository.findById(
         id,
       );
+
       if (!donationCampaign)
         throw new AppError('Campanha de doação não encontrada!', 404);
+
+      if (donationCampaign.campaignOrganizerId !== currentUserId)
+        throw new AppError(
+          'Campanha de doação não pode ser excluída por outro usuário!',
+          400,
+        );
 
       if (donationCampaign.moneyRaised > NO_DONATIONS)
         throw new AppError(

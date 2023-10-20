@@ -1,6 +1,12 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { CreateDonationCampaignDto } from './create-donation-campaign.dto';
-import { IsNotEmpty, IsString, Min, Max, IsNumber } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsNumber,
+  MinLength,
+  MaxLength,
+} from 'class-validator';
 
 export class UpdateDonationCampaignDto extends PartialType(
   CreateDonationCampaignDto,
@@ -21,8 +27,8 @@ export class UpdateDonationCampaignDto extends PartialType(
   })
   @IsNotEmpty()
   @IsString()
-  @Min(10)
-  @Max(500)
+  @MinLength(10)
+  @MaxLength(500)
   public description: string;
 
   @ApiProperty({

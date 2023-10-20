@@ -7,7 +7,6 @@ import {
   Put,
   Patch,
   Delete,
-  UseGuards,
 } from '@nestjs/common';
 import { DonationCampaignService } from './donation-campaign.service';
 
@@ -15,8 +14,7 @@ import { IResponse } from 'src/common/interfaces';
 
 import { CreateDonationCampaignDto } from './dto';
 import { UpdateDonationCampaignDto } from './dto';
-
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { GetCurrentUserId, Public } from 'src/common';
 
 @Controller('donation-campaign')
 export class DonationCampaignController {
@@ -25,10 +23,14 @@ export class DonationCampaignController {
   ) {}
 
   @Post()
-  async create(@Body() createDonationCampaignDto: CreateDonationCampaignDto) {
+  async create(
+    @Body() createDonationCampaignDto: CreateDonationCampaignDto,
+    @GetCurrentUserId() currentUserId: string,
+  ) {
     const { message, statusCode, payload } =
       (await this.donationCampaignService.create(
         createDonationCampaignDto,
+        currentUserId,
       )) as IResponse;
 
     return {
@@ -38,6 +40,7 @@ export class DonationCampaignController {
     };
   }
 
+  @Public()
   @Get()
   async findAll() {
     const { message, statusCode, payload } =
@@ -50,6 +53,7 @@ export class DonationCampaignController {
     };
   }
 
+  @Public()
   @Get('findById/:id')
   async findById(@Param('id') id: string) {
     const { message, statusCode, payload } =
@@ -66,9 +70,14 @@ export class DonationCampaignController {
   async update(
     @Param('id') id: string,
     @Body() updateDonationCampaignDto: UpdateDonationCampaignDto,
+    @GetCurrentUserId() currentUserId: string,
   ) {
     const { message, statusCode, payload } =
-      await this.donationCampaignService.update(id, updateDonationCampaignDto);
+      await this.donationCampaignService.update(
+        id,
+        updateDonationCampaignDto,
+        currentUserId,
+      );
 
     return {
       message,
@@ -78,9 +87,12 @@ export class DonationCampaignController {
   }
 
   @Patch('endDonationCampaign/:id')
-  async endDonationCampaign(@Param('id') id: string) {
+  async endDonationCampaign(
+    @Param('id') id: string,
+    @GetCurrentUserId() currentUserId: string,
+  ) {
     const { message, statusCode, payload } =
-      await this.donationCampaignService.endDonationCampaign(id);
+      await this.donationCampaignService.endDonationCampaign(id, currentUserId);
     return {
       message,
       statusCode,
@@ -89,9 +101,12 @@ export class DonationCampaignController {
   }
 
   @Delete('delete/:id')
-  async delete(@Param('id') id: string) {
+  async delete(
+    @Param('id') id: string,
+    @GetCurrentUserId() currentUserId: string,
+  ) {
     const { message, statusCode, payload } =
-      await this.donationCampaignService.delete(id);
+      await this.donationCampaignService.delete(id, currentUserId);
 
     return {
       message,

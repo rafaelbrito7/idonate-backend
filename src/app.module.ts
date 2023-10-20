@@ -6,6 +6,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AtGuard } from './common/guards';
+import { DonationModule } from './modules/donation/donation.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AtGuard } from './common/guards';
     PrismaModule,
     DonationCampaignModule,
     AuthModule,
+    DonationModule,
   ],
   controllers: [],
   providers: [

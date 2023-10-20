@@ -1,6 +1,6 @@
 import { DonationCampaign } from '@prisma/client';
 
-export class DonationCampaignsEntity implements DonationCampaign {
+export class DonationCampaignEntity implements DonationCampaign {
   id: string;
   title: string;
   description: string;

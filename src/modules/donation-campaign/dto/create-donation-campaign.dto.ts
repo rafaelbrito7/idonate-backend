@@ -3,9 +3,8 @@ import {
   IsNotEmpty,
   IsNumber,
   IsString,
-  IsUUID,
-  Max,
-  Min,
+  MaxLength,
+  MinLength,
 } from 'class-validator';
 
 export class CreateDonationCampaignDto {
@@ -25,8 +24,8 @@ export class CreateDonationCampaignDto {
   })
   @IsNotEmpty()
   @IsString()
-  @Min(10)
-  @Max(500)
+  @MaxLength(500)
+  @MinLength(10)
   public description: string;
 
   @ApiProperty({
@@ -37,13 +36,4 @@ export class CreateDonationCampaignDto {
   @IsNotEmpty()
   @IsNumber()
   public goal: number;
-
-  @ApiProperty({
-    description: 'The donation campaign organizer id',
-    type: String,
-    example: 'uuidv4()',
-  })
-  @IsNotEmpty()
-  @IsUUID()
-  public campaignOrganizerId: string;
 }
