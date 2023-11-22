@@ -7,7 +7,7 @@ import {
   Length,
 } from 'class-validator';
 
-export class SignInDto {
+export class LoginDto {
   @ApiProperty({
     description: 'User email',
     type: String,

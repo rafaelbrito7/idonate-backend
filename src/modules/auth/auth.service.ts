@@ -1,13 +1,10 @@
-import { Injectable, Req } from '@nestjs/common';
-import { SignInDto } from './dto/signin.dto';
+import { Injectable } from '@nestjs/common';
+import { LoginDto, RegisterDto } from './dto';
 import { UserRepository } from '../user/repositories';
 import { AppConfigService } from 'src/config';
 import { JwtService } from '@nestjs/jwt';
 import { AppError } from 'src/common/errors';
-import { compare } from 'bcrypt';
-import { SignUpDto } from './dto';
-import { IResponse } from 'src/common';
-import { hash } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -22,17 +19,20 @@ export class AuthService {
     await this.userRepository.updateRtHash(userId, hash);
   }
 
-  async signUp({
+  async register({
     email,
     firstName,
     lastName,
     birthday,
     cpf,
     password,
-  }: SignUpDto): Promise<IResponse> {
+  }: RegisterDto) {
     try {
-      const userExists = await this.userRepository.findByEmail(email);
-      if (userExists) throw new AppError('Usuário já cadastrado.', 400);
+      const userEmailExists = await this.userRepository.findByEmail(email);
+      if (userEmailExists) throw new AppError('Usuário já cadastrado.', 400);
+
+      const userCpfExists = await this.userRepository.findByCpf(cpf);
+      if (userCpfExists) throw new AppError('Usuário já cadastrado.', 400);
 
       const hashedPassword = await this.hashData(password);
       const newUser = await this.userRepository.create({
@@ -45,39 +45,34 @@ export class AuthService {
       });
       delete newUser.password;
 
-      const tokens = await this.getTokens(newUser.id, newUser.email);
-      await this.updateRtHash(newUser.id, tokens.refresh_token);
-
       return {
         message: 'Usuário criado com sucesso!',
         statusCode: 201,
-        payload: tokens,
+        payload: newUser,
       };
     } catch (error) {
       throw new AppError(
-        error?.message || 'Error catch Users: signUp',
+        'error?.message' || 'Error catch Users: signUp',
         error.statusCode,
       );
     }
   }
 
-  async signIn({ email, password }: SignInDto): Promise<IResponse> {
+  async login({ email, password }: LoginDto) {
     try {
       const user = await this.userRepository.findByEmail(email);
-      if (!user) throw new AppError('Usuário não encontrado!', 400);
+      if (!user)
+        throw new AppError('Password ou usuário estão incorretos!', 401);
 
       const passwordMatches = await compare(password, user.password);
       if (!passwordMatches)
-        throw new AppError(
-          'Password não confere com o usuário informado!',
-          401,
-        );
+        throw new AppError('Password ou usuário estão incorretos!', 401);
 
       const tokens = await this.getTokens(user.id, user.email);
       await this.updateRtHash(user.id, tokens.refresh_token);
 
       return {
-        message: 'User authenticated with success.',
+        message: 'Usuário autenticado com sucesso!',
         statusCode: 200,
         payload: {
           tokens,
@@ -95,7 +90,7 @@ export class AuthService {
     try {
       await this.userRepository.removeRtHash(userId);
       return {
-        message: 'User logged out with success.',
+        message: 'Usuário realizou logout com sucesso!',
         statusCode: 200,
         payload: {},
       };
@@ -114,13 +109,16 @@ export class AuthService {
 
       const isRtTheSame = await compare(rt, user.hashedRt);
       if (!isRtTheSame)
-        throw new AppError('Refresh token does not match!', 403);
+        throw new AppError(
+          'Refresh Token não é compatível com o armazenado!',
+          403,
+        );
 
       const tokens = await this.getTokens(user.id, user.email);
       await this.updateRtHash(user.id, tokens.refresh_token);
 
       return {
-        message: 'Tokens refreshed with success.',
+        message: 'Tokens atualizados com sucesso!',
         statusCode: 200,
         payload: {
           tokens,

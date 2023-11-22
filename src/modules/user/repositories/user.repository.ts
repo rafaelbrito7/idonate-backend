@@ -63,6 +63,14 @@ export class UserRepository {
     });
   }
 
+  async findByCpf(cpf: string): Promise<UsersEntity> {
+    return this.prismaService.user.findFirst({
+      where: {
+        cpf: cpf,
+      },
+    });
+  }
+
   async update(
     id: string,
     { email, firstName, lastName, birthday, cpf, password }: UpdateUserDto,

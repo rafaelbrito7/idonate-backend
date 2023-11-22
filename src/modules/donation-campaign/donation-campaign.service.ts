@@ -42,7 +42,7 @@ export class DonationCampaignService {
 
   async findAll() {
     try {
-      const donationCampaigns = this.donationCampaignRepository.findAll();
+      const donationCampaigns = await this.donationCampaignRepository.findAll();
 
       return {
         message: 'Campanhas de doação encontradas com sucesso!',

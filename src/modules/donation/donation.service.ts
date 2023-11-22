@@ -34,7 +34,7 @@ export class DonationService {
         currentUserId,
       );
       return {
-        message: 'Doaçao realizada com sucesso!',
+        message: 'Doação realizada com sucesso!',
         statusCode: 201,
         payload: donation,
       };

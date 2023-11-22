@@ -2,7 +2,7 @@ import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 
-import { SignInDto, SignUpDto } from './dto';
+import { RegisterDto, LoginDto } from './dto';
 
 import { GetCurrentUser, GetCurrentUserId, IResponse } from 'src/common';
 import { RtGuard } from 'src/common/guards';
@@ -13,11 +13,11 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
-  @Post('signUp')
-  async signUp(@Body() signUpDto: SignUpDto): Promise<IResponse> {
-    const { message, statusCode, payload } = await this.authService.signUp(
-      signUpDto,
-    );
+  @Post('register')
+  async register(@Body() registerDto: RegisterDto): Promise<IResponse> {
+    const { message, statusCode, payload } = (await this.authService.register(
+      registerDto,
+    )) as IResponse;
 
     return {
       message,
@@ -27,12 +27,13 @@ export class AuthController {
   }
 
   @Public()
-  @Post('signIn')
-  async signIn(@Body() { email, password }: SignInDto): Promise<IResponse> {
-    const { message, statusCode, payload } = await this.authService.signIn({
+  @Post('login')
+  async login(@Body() { email, password }: LoginDto): Promise<IResponse> {
+    console.log('Hello');
+    const { message, statusCode, payload } = (await this.authService.login({
       email,
       password,
-    });
+    })) as IResponse;
 
     return {
       message,

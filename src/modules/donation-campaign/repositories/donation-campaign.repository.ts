@@ -27,11 +27,7 @@ export class DonationCampaignRepository {
   }
 
   async findAll(): Promise<DonationCampaignEntity[]> {
-    return this.prismaService.donationCampaign.findMany({
-      include: {
-        campaignOrganizer: true,
-      },
-    });
+    return this.prismaService.donationCampaign.findMany();
   }
 
   async findById(id: string): Promise<DonationCampaignEntity> {
