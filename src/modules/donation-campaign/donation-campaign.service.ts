@@ -132,14 +132,15 @@ export class DonationCampaignService {
           400,
         );
 
-      await this.donationCampaignRepository.endDonationCampaign(
-        donationCampaign.id,
-      );
+      const endedDonationCampaign =
+        await this.donationCampaignRepository.endDonationCampaign(
+          donationCampaign.id,
+        );
 
       return {
         message: 'Campanha de doação finalizada com sucesso!',
         statusCode: 200,
-        payload: null,
+        payload: endedDonationCampaign,
       };
     } catch (error) {
       throw new AppError(

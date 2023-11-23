@@ -69,10 +69,12 @@ export class DonationCampaignRepository {
   }
 
   async delete(id: string): Promise<DonationCampaignEntity> {
-    return await this.prismaService.donationCampaign.delete({
+    await this.prismaService.donationCampaign.delete({
       where: {
         id,
       },
     });
+
+    return null;
   }
 }

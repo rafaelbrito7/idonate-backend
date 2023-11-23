@@ -7,7 +7,6 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AtGuard } from './common/guards';
 import { DonationModule } from './modules/donation/donation.module';
-import { TestModule } from './test/test.module';
 
 @Module({
   imports: [
@@ -17,7 +16,6 @@ import { TestModule } from './test/test.module';
     DonationCampaignModule,
     AuthModule,
     DonationModule,
-    TestModule,
   ],
   controllers: [],
   providers: [
