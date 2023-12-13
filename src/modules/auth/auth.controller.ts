@@ -29,7 +29,6 @@ export class AuthController {
   @Public()
   @Post('login')
   async login(@Body() { email, password }: LoginDto): Promise<IResponse> {
-    console.log('Hello');
     const { message, statusCode, payload } = (await this.authService.login({
       email,
       password,
@@ -55,22 +54,22 @@ export class AuthController {
     };
   }
 
-  @Public()
-  @UseGuards(RtGuard)
-  @Post('refresh')
-  async refresh(
-    @GetCurrentUserId() userId: string,
-    @GetCurrentUser('refreshToken') refreshToken: string,
-  ) {
-    const { message, statusCode, payload } = await this.authService.refresh(
-      userId,
-      refreshToken,
-    );
+  // @Public()
+  // @UseGuards(RtGuard)
+  // @Post('refresh')
+  // async refresh(
+  //   @GetCurrentUserId() userId: string,
+  //   @GetCurrentUser('refreshToken') refreshToken: string,
+  // ) {
+  //   const { message, statusCode, payload } = await this.authService.refresh(
+  //     userId,
+  //     refreshToken,
+  //   );
 
-    return {
-      message,
-      statusCode,
-      payload,
-    };
-  }
+  //   return {
+  //     message,
+  //     statusCode,
+  //     payload,
+  //   };
+  // }
 }

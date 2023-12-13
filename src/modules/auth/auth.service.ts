@@ -62,11 +62,11 @@ export class AuthService {
     try {
       const user = await this.userRepository.findByEmail(email);
       if (!user)
-        throw new AppError('Password ou usuário estão incorretos!', 401);
+        throw new AppError('Password ou usuário estão incorretos!', 403);
 
       const passwordMatches = await compare(password, user.password);
       if (!passwordMatches)
-        throw new AppError('Password ou usuário estão incorretos!', 401);
+        throw new AppError('Password ou usuário estão incorretos!', 403);
 
       const tokens = await this.getTokens(user.id, user.email);
       await this.updateRtHash(user.id, tokens.refresh_token);
@@ -102,35 +102,35 @@ export class AuthService {
     }
   }
 
-  async refresh(userId: string, rt: string) {
-    try {
-      const user = await this.userRepository.findById(userId);
-      if (!user || !user.hashedRt) throw new AppError('Unauthorized!', 404);
+  // async refresh(userId: string, rt: string) {
+  //   try {
+  //     const user = await this.userRepository.findById(userId);
+  //     if (!user || !user.hashedRt) throw new AppError('Unauthorized!', 404);
 
-      const isRtTheSame = await compare(rt, user.hashedRt);
-      if (!isRtTheSame)
-        throw new AppError(
-          'Refresh Token não é compatível com o armazenado!',
-          403,
-        );
+  //     const isRtTheSame = await compare(rt, user.hashedRt);
+  //     if (!isRtTheSame)
+  //       throw new AppError(
+  //         'Refresh Token não é compatível com o armazenado!',
+  //         403,
+  //       );
 
-      const tokens = await this.getTokens(user.id, user.email);
-      await this.updateRtHash(user.id, tokens.refresh_token);
+  //     const tokens = await this.getTokens(user.id, user.email);
+  //     await this.updateRtHash(user.id, tokens.refresh_token);
 
-      return {
-        message: 'Tokens atualizados com sucesso!',
-        statusCode: 200,
-        payload: {
-          tokens,
-        },
-      };
-    } catch (error) {
-      throw new AppError(
-        error?.message || 'Error catch Users:refresh',
-        error.statusCode,
-      );
-    }
-  }
+  //     return {
+  //       message: 'Tokens atualizados com sucesso!',
+  //       statusCode: 200,
+  //       payload: {
+  //         tokens,
+  //       },
+  //     };
+  //   } catch (error) {
+  //     throw new AppError(
+  //       error?.message || 'Error catch Users:refresh',
+  //       error.statusCode,
+  //     );
+  //   }
+  // }
 
   //Utility functions
 
@@ -147,7 +147,7 @@ export class AuthService {
         },
         {
           secret: this.configService.jwtSecrets.at,
-          expiresIn: 60 * 15,
+          expiresIn: '1m',
         },
       ),
       this.jwtService.signAsync(

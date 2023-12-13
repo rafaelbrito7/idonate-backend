@@ -3,6 +3,7 @@ FROM node:21 AS builder
 
 # Set the working directory
 ENV HOME=/app
+
 WORKDIR $HOME
 
 # Update system and install OpenSSL
@@ -18,7 +19,7 @@ COPY --chown=node:node package*.json $HOME/
 RUN npm install
 
 # Copy application code with correct ownership
-COPY --chown=node:node . .
+COPY --chown=node:node . $HOME
 
 # Build the application
 RUN npm run build
@@ -28,6 +29,7 @@ FROM node:21 as app
 
 # Set the working directory in the new stage
 ENV HOME=/app
+
 WORKDIR $HOME
 
 # Clear npm cache
