@@ -1,26 +1,83 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
+import { CommentRepository } from './repositories';
+import { AppError } from 'src/common';
 
 @Injectable()
 export class CommentService {
-  create(createCommentDto: CreateCommentDto) {
-    return 'This action adds a new comment';
+  constructor(private readonly commentRepository: CommentRepository) {}
+
+  async create(
+    { description, donationCampaignId }: CreateCommentDto,
+    currentUserId: string,
+  ) {
+    try {
+      const comment = await this.commentRepository.create(
+        {
+          description,
+          donationCampaignId,
+        },
+        currentUserId,
+      );
+
+      return {
+        statusCode: 201,
+        message: 'Comentário criado com sucesso!',
+        payload: comment,
+      };
+    } catch (error) {
+      throw new AppError(
+        error?.message || 'Error catch Comment: create',
+        error.statusCode,
+      );
+    }
   }
 
-  findAll() {
-    return `This action returns all comment`;
+  async findByDonationCampaignId(donationCampaignId: string) {
+    try {
+      const comments = await this.commentRepository.findByDonationCampaignId(
+        donationCampaignId,
+      );
+
+      return {
+        message: 'Comentários encontrados com sucesso!',
+        statusCode: 200,
+        payload: {
+          donationCampaignId,
+          comments,
+        },
+      };
+    } catch (error) {
+      throw new AppError(
+        error?.message || 'Error catch Comment: findByDonationCampaignId',
+        error.statusCode,
+      );
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} comment`;
-  }
+  async delete(id: string, currentUserId: string) {
+    try {
+      const comment = await this.commentRepository.findById(id);
 
-  update(id: number, updateCommentDto: UpdateCommentDto) {
-    return `This action updates a #${id} comment`;
-  }
+      if (comment.userId !== currentUserId) {
+        throw new AppError(
+          'Usuário não possui permissão para deletar comentário que não é de sua autoria.',
+          403,
+        );
+      }
 
-  remove(id: number) {
-    return `This action removes a #${id} comment`;
+      await this.commentRepository.delete(id);
+
+      return {
+        message: 'Comentário deletado com sucesso!',
+        statusCode: 200,
+        payload: null,
+      };
+    } catch (error) {
+      throw new AppError(
+        error?.message || 'Error catch Comment: delete',
+        error.statusCode,
+      );
+    }
   }
 }

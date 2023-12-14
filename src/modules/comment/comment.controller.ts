@@ -1,42 +1,60 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
+
+import { GetCurrentUserId, IResponse } from 'src/common';
 
 @Controller('comment')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   @Post()
-  create(@Body() createCommentDto: CreateCommentDto) {
-    return this.commentService.create(createCommentDto);
+  async create(
+    @Body() createCommentDto: CreateCommentDto,
+    @GetCurrentUserId() currentUserId: string,
+  ) {
+    const { message, statusCode, payload } = (await this.commentService.create(
+      createCommentDto,
+      currentUserId,
+    )) as IResponse;
+
+    return {
+      message,
+      statusCode,
+      payload,
+    };
   }
 
-  @Get()
-  findAll() {
-    return this.commentService.findAll();
-  }
+  @Get('findByDonationCampaignId/:donationCampaignId')
+  async findByDonationCampaignId(
+    @Param('donationCampaignId') donationCampaignId: string,
+  ) {
+    const { message, statusCode, payload } =
+      (await this.commentService.findByDonationCampaignId(
+        donationCampaignId,
+      )) as IResponse;
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.commentService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto) {
-    return this.commentService.update(+id, updateCommentDto);
+    return {
+      message,
+      statusCode,
+      payload,
+    };
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.commentService.remove(+id);
+  async delete(
+    @Param('id') id: string,
+    @GetCurrentUserId() currentUserId: string,
+  ) {
+    const { message, statusCode, payload } = (await this.commentService.delete(
+      id,
+      currentUserId,
+    )) as IResponse;
+
+    return {
+      message,
+      statusCode,
+      payload,
+    };
   }
 }

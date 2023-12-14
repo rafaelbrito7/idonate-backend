@@ -32,7 +32,6 @@ describe('CommentService', () => {
       deletedAt: new Date('2023-11-22'),
       userId: mockCurrentUserId,
     })),
-    deleteByUserId: jest.fn((userId) => null),
   };
 
   beforeEach(async () => {
@@ -121,19 +120,5 @@ describe('CommentService', () => {
     });
 
     expect(mockCommentRepository.delete).toHaveBeenCalledWith(mockCommentId);
-  });
-
-  it('should delete all comments by user id', async () => {
-    const comment = await service.deleteByUserId(mockCurrentUserId);
-
-    expect(comment).toEqual({
-      message: 'Comentários deletados com sucesso!',
-      statusCode: 200,
-      payload: null,
-    });
-
-    expect(mockCommentRepository.deleteByUserId).toHaveBeenCalledWith(
-      mockCurrentUserId,
-    );
   });
 });

@@ -71,10 +71,11 @@ describe('CommentController', () => {
 
   it('should create a comment', async () => {
     const mockCreateDto = {
-      content: 'Comment content',
+      description: 'Comment content',
+      donationCampaignId: 'donationCampaignId',
     };
 
-    const comment = await controller.create(mockCreateDto);
+    const comment = await controller.create(mockCreateDto, mockCurrentUserId);
 
     expect(comment).toEqual({
       message: 'Comentário criado com sucesso!',
@@ -93,22 +94,23 @@ describe('CommentController', () => {
   });
 
   it('should find all comments by donation campaign id', async () => {
+    const mockDonationCampaignId = 'donationCampaignId';
+
     const comments = await controller.findByDonationCampaignId(
-      mockCommentId,
-      mockCurrentUserId,
+      mockDonationCampaignId,
     );
 
     expect(comments).toEqual({
       message: 'Comentários encontrados com sucesso!',
       statusCode: 200,
       payload: {
-        donationCampaignId: mockCommentId,
+        donationCampaignId: mockDonationCampaignId,
         comments: [mockComment],
       },
     });
 
     expect(mockCommentService.findByDonationCampaignId).toHaveBeenCalledWith(
-      mockCommentId,
+      mockDonationCampaignId,
     );
   });
 
@@ -124,19 +126,8 @@ describe('CommentController', () => {
       },
     });
 
-    expect(mockCommentService.delete).toHaveBeenCalledWith(mockCommentId);
-  });
-
-  it('should delete all comments by user id', async () => {
-    const comment = await controller.deleteByUserId(mockCurrentUserId);
-
-    expect(comment).toEqual({
-      message: 'Comentários deletados com sucesso!',
-      statusCode: 200,
-      payload: null,
-    });
-
-    expect(mockCommentService.deleteByUserId).toHaveBeenCalledWith(
+    expect(mockCommentService.delete).toHaveBeenCalledWith(
+      mockCommentId,
       mockCurrentUserId,
     );
   });
