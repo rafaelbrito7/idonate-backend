@@ -16,7 +16,7 @@ export class UserRepository {
     cpf,
     password,
   }: CreateUserDto): Promise<UsersEntity> {
-    return this.prismaService.user.create({
+    return await this.prismaService.user.create({
       data: {
         email,
         firstName,
@@ -29,7 +29,7 @@ export class UserRepository {
   }
 
   async changePassword(id: string, newPassword: string): Promise<UsersEntity> {
-    return this.prismaService.user.update({
+    return await this.prismaService.user.update({
       where: {
         id,
       },
@@ -40,11 +40,11 @@ export class UserRepository {
   }
 
   async findAll(): Promise<UsersEntity[]> {
-    return this.prismaService.user.findMany();
+    return await this.prismaService.user.findMany();
   }
 
   async findById(id: string): Promise<UsersEntity> {
-    return this.prismaService.user.findUnique({
+    return await this.prismaService.user.findUnique({
       where: {
         id,
       },
@@ -56,7 +56,7 @@ export class UserRepository {
   }
 
   async findByEmail(email: string): Promise<UsersEntity> {
-    return this.prismaService.user.findFirst({
+    return await this.prismaService.user.findFirst({
       where: {
         email: email,
       },
@@ -64,7 +64,7 @@ export class UserRepository {
   }
 
   async findByCpf(cpf: string): Promise<UsersEntity> {
-    return this.prismaService.user.findFirst({
+    return await this.prismaService.user.findFirst({
       where: {
         cpf: cpf,
       },
@@ -75,7 +75,7 @@ export class UserRepository {
     id: string,
     { email, firstName, lastName, birthday, cpf, password }: UpdateUserDto,
   ): Promise<UsersEntity> {
-    return this.prismaService.user.update({
+    return await this.prismaService.user.update({
       where: {
         id,
       },
@@ -91,7 +91,7 @@ export class UserRepository {
   }
 
   async softDelete(id: string): Promise<UsersEntity> {
-    return this.prismaService.user.update({
+    return await this.prismaService.user.update({
       where: {
         id,
       },
@@ -103,7 +103,7 @@ export class UserRepository {
   }
 
   async restore(id: string): Promise<UsersEntity> {
-    return this.prismaService.user.update({
+    return await this.prismaService.user.update({
       where: {
         id,
       },
@@ -115,7 +115,7 @@ export class UserRepository {
   }
 
   async updateRtHash(id: string, hash: string): Promise<UsersEntity> {
-    return this.prismaService.user.update({
+    return await this.prismaService.user.update({
       where: {
         id,
       },
@@ -126,7 +126,7 @@ export class UserRepository {
   }
 
   async removeRtHash(id: string) {
-    return this.prismaService.user.updateMany({
+    return await this.prismaService.user.updateMany({
       where: {
         id,
         hashedRt: {
@@ -140,7 +140,7 @@ export class UserRepository {
   }
 
   async delete(id: string): Promise<UsersEntity> {
-    return this.prismaService.user.delete({
+    return await this.prismaService.user.delete({
       where: {
         id: id,
       },

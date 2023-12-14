@@ -12,7 +12,7 @@ export class DonationCampaignRepository {
     { title, description, goal }: CreateDonationCampaignDto,
     currentUserId: string,
   ): Promise<DonationCampaignEntity> {
-    return this.prismaService.donationCampaign.create({
+    return await this.prismaService.donationCampaign.create({
       data: {
         campaignOrganizer: {
           connect: {
@@ -27,11 +27,11 @@ export class DonationCampaignRepository {
   }
 
   async findAll(): Promise<DonationCampaignEntity[]> {
-    return this.prismaService.donationCampaign.findMany();
+    return await this.prismaService.donationCampaign.findMany();
   }
 
   async findById(id: string): Promise<DonationCampaignEntity> {
-    return this.prismaService.donationCampaign.findUnique({
+    return await this.prismaService.donationCampaign.findUnique({
       where: {
         id,
       },

@@ -10,7 +10,7 @@ export class CommentRepository {
     { description, donationCampaignId }: CreateCommentDto,
     currentUserId: string,
   ) {
-    return this.prismaService.comment.create({
+    return await this.prismaService.comment.create({
       data: {
         user: {
           connect: {
@@ -28,7 +28,7 @@ export class CommentRepository {
   }
 
   async findByDonationCampaignId(donationCampaignId: string) {
-    return this.prismaService.comment.findMany({
+    return await this.prismaService.comment.findMany({
       where: {
         campaignId: donationCampaignId,
       },
@@ -39,7 +39,7 @@ export class CommentRepository {
   }
 
   async findById(id: string) {
-    return this.prismaService.comment.findUnique({
+    return await this.prismaService.comment.findUnique({
       where: {
         id,
       },
@@ -47,7 +47,7 @@ export class CommentRepository {
   }
 
   async delete(id: string) {
-    return this.prismaService.comment.delete({
+    await this.prismaService.comment.delete({
       where: {
         id,
       },

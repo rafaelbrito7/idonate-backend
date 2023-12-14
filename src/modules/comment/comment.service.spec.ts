@@ -24,12 +24,13 @@ describe('CommentService', () => {
         userId: mockCurrentUserId,
       },
     ]),
-    delete: jest.fn((id) => ({
+    delete: jest.fn((id) => null),
+    findById: jest.fn((id) => ({
       id,
       content: 'Comment content',
       createdAt: new Date('2023-11-22'),
       updatedAt: new Date('2023-11-22'),
-      deletedAt: new Date('2023-11-22'),
+      deletedAt: null,
       userId: mockCurrentUserId,
     })),
   };
@@ -54,7 +55,8 @@ describe('CommentService', () => {
 
   it('should create a comment', async () => {
     const mockCreateDto = {
-      content: 'Comment content',
+      description: 'Comment content',
+      donationCampaignId: 'donationCampaignId',
     };
 
     const comment = await service.create(mockCreateDto, mockCurrentUserId);
@@ -109,14 +111,7 @@ describe('CommentService', () => {
     expect(comment).toEqual({
       message: 'Comentário deletado com sucesso!',
       statusCode: 200,
-      payload: {
-        id: mockCommentId,
-        content: 'Comment content',
-        createdAt: new Date('2023-11-22'),
-        updatedAt: new Date('2023-11-22'),
-        deletedAt: new Date('2023-11-22'),
-        userId: mockCurrentUserId,
-      },
+      payload: null,
     });
 
     expect(mockCommentRepository.delete).toHaveBeenCalledWith(mockCommentId);

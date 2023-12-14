@@ -11,7 +11,7 @@ export class DonationRepository {
     { donationCampaignId, moneyAmount }: CreateDonationDto,
     currentUserId: string,
   ): Promise<DonationEntity> {
-    return this.prismaService.donation.create({
+    return await this.prismaService.donation.create({
       data: {
         donationCampaign: {
           connect: {
@@ -31,7 +31,7 @@ export class DonationRepository {
   async findAllCampaignDonations(
     donationCampaignId: string,
   ): Promise<DonationEntity[]> {
-    return this.prismaService.donation.findMany({
+    return await this.prismaService.donation.findMany({
       where: {
         donationCampaignId,
       },
@@ -42,7 +42,7 @@ export class DonationRepository {
   }
 
   async findAllUserDonations(currentUserId: string): Promise<DonationEntity[]> {
-    return this.prismaService.donation.findMany({
+    return await this.prismaService.donation.findMany({
       where: {
         donorId: currentUserId,
       },
@@ -53,7 +53,7 @@ export class DonationRepository {
   }
 
   async findOne(id: string): Promise<DonationEntity> {
-    return this.prismaService.donation.findUnique({
+    return await this.prismaService.donation.findUnique({
       where: {
         id,
       },

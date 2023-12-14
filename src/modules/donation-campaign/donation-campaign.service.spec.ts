@@ -104,7 +104,7 @@ describe('DonationCampaignService', () => {
       createdAt: new Date('2023-11-22'),
       updatedAt: new Date('2023-11-22'),
       deletedAt: null,
-      campaignOrganizerId: mockCampaignId,
+      campaignOrganizerId: mockCurrentUserId,
       ...updateDonationCampaignDto,
     })),
     endDonationCampaign: jest.fn((id) => ({
