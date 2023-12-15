@@ -132,7 +132,7 @@ export class AuthService {
   //   }
   // }
 
-  //Utility functions
+  // Utility functions
 
   async hashData(data: string) {
     return hash(data, 10);
@@ -147,7 +147,7 @@ export class AuthService {
         },
         {
           secret: this.configService.jwtSecrets.at,
-          expiresIn: '1m',
+          expiresIn: '1h',
         },
       ),
       this.jwtService.signAsync(

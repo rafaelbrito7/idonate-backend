@@ -29,6 +29,11 @@ export class DonationService {
           400,
         );
 
+      this.donationCampaignRepository.updateRaisedMoney(
+        donationCampaignId,
+        moneyAmount,
+      );
+
       const donation = await this.donationRepository.create(
         { donationCampaignId, moneyAmount },
         currentUserId,

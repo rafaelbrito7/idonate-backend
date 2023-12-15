@@ -7,7 +7,7 @@ export class CommentRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(
-    { description, donationCampaignId }: CreateCommentDto,
+    { content, donationCampaignId }: CreateCommentDto,
     currentUserId: string,
   ) {
     return await this.prismaService.comment.create({
@@ -17,12 +17,12 @@ export class CommentRepository {
             id: currentUserId,
           },
         },
-        campaign: {
+        donationCampaign: {
           connect: {
             id: donationCampaignId,
           },
         },
-        description,
+        content,
       },
     });
   }
@@ -30,7 +30,7 @@ export class CommentRepository {
   async findByDonationCampaignId(donationCampaignId: string) {
     return await this.prismaService.comment.findMany({
       where: {
-        campaignId: donationCampaignId,
+        donationCampaignId: donationCampaignId,
       },
       include: {
         user: true,

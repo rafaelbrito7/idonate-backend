@@ -17,7 +17,7 @@ export class CreateCommentDto {
   @IsString()
   @MinLength(10)
   @MaxLength(255)
-  public description: string;
+  public content: string;
 
   @ApiProperty({
     description: 'The donation campaign id',

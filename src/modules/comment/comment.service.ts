@@ -8,13 +8,13 @@ export class CommentService {
   constructor(private readonly commentRepository: CommentRepository) {}
 
   async create(
-    { description, donationCampaignId }: CreateCommentDto,
+    { content, donationCampaignId }: CreateCommentDto,
     currentUserId: string,
   ) {
     try {
       const comment = await this.commentRepository.create(
         {
-          description,
+          content,
           donationCampaignId,
         },
         currentUserId,

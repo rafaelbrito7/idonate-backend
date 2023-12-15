@@ -71,7 +71,7 @@ describe('CommentController', () => {
 
   it('should create a comment', async () => {
     const mockCreateDto = {
-      description: 'Comment content',
+      content: 'Comment content',
       donationCampaignId: 'donationCampaignId',
     };
 

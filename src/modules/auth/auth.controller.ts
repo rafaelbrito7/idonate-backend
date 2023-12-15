@@ -41,18 +41,19 @@ export class AuthController {
     };
   }
 
-  @Post('logout')
-  async logout(@GetCurrentUserId() userId: string) {
-    const { message, statusCode, payload } = await this.authService.logout(
-      userId,
-    );
+  // @Public()
+  // @Post('logout')
+  // async logout(@GetCurrentUserId() userId: string) {
+  //   const { message, statusCode, payload } = await this.authService.logout(
+  //     userId,
+  //   );
 
-    return {
-      message,
-      statusCode,
-      payload,
-    };
-  }
+  //   return {
+  //     message,
+  //     statusCode,
+  //     payload,
+  //   };
+  // }
 
   // @Public()
   // @UseGuards(RtGuard)

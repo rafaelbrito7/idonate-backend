@@ -27,7 +27,11 @@ export class DonationCampaignRepository {
   }
 
   async findAll(): Promise<DonationCampaignEntity[]> {
-    return await this.prismaService.donationCampaign.findMany();
+    return await this.prismaService.donationCampaign.findMany({
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
   }
 
   async findById(id: string): Promise<DonationCampaignEntity> {
@@ -53,6 +57,19 @@ export class DonationCampaignRepository {
         description,
         goal,
         title,
+      },
+    });
+  }
+
+  async updateRaisedMoney(id: string, amount: number) {
+    return await this.prismaService.donationCampaign.update({
+      where: {
+        id,
+      },
+      data: {
+        moneyRaised: {
+          increment: amount,
+        },
       },
     });
   }
